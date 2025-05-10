@@ -1,0 +1,128 @@
+🔧 Development Plan – Phase Wise for Blackbox AI
+🟢 Phase 1: Setup & Handwritten Note Input (1.5 hrs)
+[Frontend - Next.js]
+
+Create a basic page with an upload form (accept .txt, .pdf, or .docx).
+
+Allow text paste as a fallback.
+
+Add loading spinner during processing.
+
+[Backend - FastAPI]
+
+Setup FastAPI server with CORS enabled.
+
+Create /upload_notes POST endpoint to accept file or text.
+
+If file is PDF or DOCX, extract text using pdfplumber or python-docx.
+
+[Database - MongoDB]
+
+Connect FastAPI to MongoDB using motor.
+
+Store: user_id, raw_text, timestamp.
+
+🟡 Phase 2: Text Summarization (2 hrs)
+[Backend - FastAPI]
+
+Add /summarize endpoint.
+
+Load summarization model (t5-small, bart-large-cnn, or OpenAI via API).
+
+Process text → generate bullet/structured summary.
+
+Store in DB: summary, notes_id.
+
+[Frontend - Next.js]
+
+Display the summary on the UI.
+
+Add formatting (headings, bullet points).
+
+🔵 Phase 3: Quiz & Flashcard Generator (2.5 hrs)
+[Backend - FastAPI]
+
+Create /generate_quiz endpoint.
+
+Use pretrained NLP model (e.g., valhalla/t5-base-qg-hl) or OpenAI to:
+
+Generate 5 MCQs
+
+Generate 5 fill-in-the-blank questions
+
+Create /generate_flashcards to convert summary → Q&A format.
+
+[Database]
+
+Store: quizzes (linked to summary), flashcards (linked to summary).
+
+[Frontend - Next.js]
+
+Create quiz UI with radio buttons and result evaluation.
+
+Create flashcard UI (flip-style Q&A cards).
+
+🟠 Phase 4: Adaptive Difficulty (2 hrs)
+[Backend - FastAPI]
+
+Add /submit_quiz endpoint to accept answers and compute performance.
+
+Store: correct_count, time_taken, topic, user_id.
+
+Add logic to track overall & per-topic performance.
+
+Adjust quiz difficulty in /generate_quiz using:
+
+Easy: definitions, basic recall
+
+Medium: concept relationships
+
+Hard: application, analysis
+
+[Frontend - Next.js]
+
+Show feedback on performance (score %, suggested difficulty).
+
+🟣 Phase 5: User Auth & Dashboard (2 hrs)
+[Frontend - Next.js]
+
+Implement NextAuth.js for login (Google or email).
+
+Save user session token.
+
+[Backend - FastAPI]
+
+Create auth middleware using JWT.
+
+Verify token for all endpoints (summarize, quiz gen, etc.).
+
+[Dashboard Page]
+
+Show:
+
+Uploaded notes
+
+Summaries
+
+Past quizzes + scores
+
+Flashcards for review
+
+✅ Key Notes for AI Assistance
+Use FastAPI with async routes and Pydantic models.
+
+Use motor for async MongoDB access.
+
+Token-based auth between frontend (NextAuth) and backend (JWT).
+
+For NLP:
+
+Summarization → bart-large-cnn or t5-small
+
+Quiz/Flashcards → valhalla/t5-base-qg-hl or OpenAI
+
+Prioritize reusability: each backend function = isolated module
+
+Deployment:
+
+Vercel (frontend), Render/Fly.io (FastAPI), MongoDB Atlas (DB)

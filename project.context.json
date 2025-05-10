@@ -1,0 +1,114 @@
+{
+  "name": "CognitiPath",
+  "description": "A web app that lets users upload handwritten notes (via text), summarizes them, translates them to the user's native language, and generates MCQs, fill-in-the-blanks, and flashcards. It adapts quiz difficulty based on user performance.",
+  "techStack": {
+    "frontend": "React + Next.js (TypeScript)",
+    "backend": "FastAPI (Python)",
+    "database": "MongoDB (motor async driver)",
+    "auth": "NextAuth.js with JWT",
+    "nlp": {
+      "summarization": "facebook/bart-large-cnn or t5-small",
+      "quiz_gen": "valhalla/t5-base-qg-hl or OpenAI GPT",
+      "translation": "Helsinki-NLP opus-mt models or OpenAI",
+      "flashcards": "generated from summary content"
+    }
+  },
+  "features": [
+    "Upload note text or file (PDF/DOCX) → extract raw text",
+    "Summarize notes using transformers",
+    "Translate raw/summary to native language",
+    "Generate MCQs and fill-in-the-blanks quizzes",
+    "Generate flashcards (Q&A)",
+    "Track performance per topic",
+    "Adaptive difficulty for quizzes"
+  ],
+  "apiRoutes": [
+    {
+      "method": "POST",
+      "path": "/upload_notes",
+      "desc": "Accepts raw note text or file, extracts text, and stores it"
+    },
+    {
+      "method": "POST",
+      "path": "/summarize",
+      "desc": "Returns a summary of the uploaded note"
+    },
+    {
+      "method": "POST",
+      "path": "/translate",
+      "desc": "Translates text (raw or summary) to a user-selected native language"
+    },
+    {
+      "method": "POST",
+      "path": "/generate_quiz",
+      "desc": "Generates 5 MCQs and 5 fill-in-the-blanks from the summary"
+    },
+    {
+      "method": "POST",
+      "path": "/generate_flashcards",
+      "desc": "Creates flashcards from the summary"
+    },
+    {
+      "method": "POST",
+      "path": "/submit_quiz",
+      "desc": "Submits user answers and updates performance in DB"
+    },
+    {
+      "method": "GET",
+      "path": "/performance/{user_id}",
+      "desc": "Fetches performance summary (overall and per-topic)"
+    }
+  ],
+  "schemas": {
+    "User": {
+      "user_id": "str",
+      "name": "str",
+      "email": "str",
+      "preferred_language": "str",
+      "performance": [{ "topic": "str", "accuracy": "float", "difficulty": "str" }]
+    },
+    "Note": {
+      "note_id": "str",
+      "user_id": "str",
+      "raw_text": "str",
+      "summary": "str",
+      "translated_text": {
+        "raw": "str",
+        "summary": "str"
+      },
+      "timestamp": "datetime"
+    },
+    "Quiz": {
+      "quiz_id": "str",
+      "note_id": "str",
+      "questions": [{
+        "type": "MCQ | FITB",
+        "question": "str",
+        "options": ["str"],
+        "answer": "str"
+      }]
+    },
+    "Flashcard": {
+      "flashcard_id": "str",
+      "note_id": "str",
+      "qa_pairs": [{ "question": "str", "answer": "str" }]
+    }
+  },
+  "auth": {
+    "flow": "Frontend uses NextAuth (Google/email), sends JWT in Authorization header. FastAPI verifies token on protected routes."
+  },
+  "misc": {
+    "translation_note": "User sets preferred language; text is translated using Helsinki-NLP or OpenAI's model depending on availability."
+  },
+  "projectStructure": {
+    "src": {
+      "app": "App router pages",
+      "components": "Reusable components",
+      "lib": "Utility functions",
+      "types": "TypeScript interfaces",
+      "hooks": "Custom React hooks",
+      "services": "API service functions",
+      "styles": "Global styles"
+    }
+  }
+}
